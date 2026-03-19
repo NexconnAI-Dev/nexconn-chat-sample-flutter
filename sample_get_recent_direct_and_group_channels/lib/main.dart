@@ -71,8 +71,8 @@ class _GetRecentChannelsPageState extends State<GetRecentChannelsPage> {
     try {
       await _initializeAndConnect();
 
-      final query = BaseChannel.createChannelListQuery(
-        ChannelListQueryParams(
+      final query = BaseChannel.createChannelsQuery(
+        ChannelsQueryParams(
           channelTypes: const [ChannelType.direct, ChannelType.group],
           pageSize: pageSize,
           topPriority: true,
