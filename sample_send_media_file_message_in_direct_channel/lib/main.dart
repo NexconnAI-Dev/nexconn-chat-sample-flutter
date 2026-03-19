@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexconn_flutter/nexconn_flutter.dart';
+import 'package:ai_nexconn_chat_plugin/ai_nexconn_chat_plugin.dart';
 
 void main() {
   runApp(const SampleApp());
@@ -10,9 +10,7 @@ class SampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SendMediaFileMessagePage(),
-    );
+    return const MaterialApp(home: SendMediaFileMessagePage());
   }
 }
 
@@ -40,19 +38,19 @@ class _SendMediaFileMessagePageState extends State<SendMediaFileMessagePage> {
       InitParams(appKey: _appKeyController.text.trim()),
     );
 
-    await NCEngine.connect(
-      ConnectParams(token: _tokenController.text.trim()),
-      (userId, error) {
-        if (!mounted) return;
-        setState(() {
-          if (error != null && !error.isSuccess) {
-            _log += 'Connect failed: ${error.toJson()}\n';
-            return;
-          }
-          _log += 'Connected as: ${userId ?? '(empty)'}\n';
-        });
-      },
-    );
+    await NCEngine.connect(ConnectParams(token: _tokenController.text.trim()), (
+      userId,
+      error,
+    ) {
+      if (!mounted) return;
+      setState(() {
+        if (error != null && !error.isSuccess) {
+          _log += 'Connect failed: ${error.toJson()}\n';
+          return;
+        }
+        _log += 'Connected as: ${userId ?? '(empty)'}\n';
+      });
+    });
   }
 
   Future<void> _runSample() async {
@@ -61,7 +59,10 @@ class _SendMediaFileMessagePageState extends State<SendMediaFileMessagePage> {
     final targetUserId = _targetUserIdController.text.trim();
     final filePath = _filePathController.text.trim();
 
-    if (appKey.isEmpty || token.isEmpty || targetUserId.isEmpty || filePath.isEmpty) {
+    if (appKey.isEmpty ||
+        token.isEmpty ||
+        targetUserId.isEmpty ||
+        filePath.isEmpty) {
       setState(() {
         _log = 'App Key, Token, Target User ID, and File Path are required.';
       });
@@ -160,7 +161,11 @@ class _SendMediaFileMessagePageState extends State<SendMediaFileMessagePage> {
           _buildField('App Key', _appKeyController),
           _buildField('Token', _tokenController),
           _buildField('Target User ID', _targetUserIdController),
-          _buildField('Local File Path', _filePathController, hint: '/path/to/file.pdf'),
+          _buildField(
+            'Local File Path',
+            _filePathController,
+            hint: '/path/to/file.pdf',
+          ),
           ElevatedButton(
             onPressed: _running ? null : _runSample,
             child: Text(_running ? 'Running...' : 'Run Sample'),

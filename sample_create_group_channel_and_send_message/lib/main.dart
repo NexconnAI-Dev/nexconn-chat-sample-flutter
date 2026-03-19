@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexconn_flutter/nexconn_flutter.dart';
+import 'package:ai_nexconn_chat_plugin/ai_nexconn_chat_plugin.dart';
 
 void main() {
   runApp(const SampleApp());
@@ -10,9 +10,7 @@ class SampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: CreateGroupAndSendMessagePage(),
-    );
+    return const MaterialApp(home: CreateGroupAndSendMessagePage());
   }
 }
 
@@ -42,19 +40,19 @@ class _CreateGroupAndSendMessagePageState
       InitParams(appKey: _appKeyController.text.trim()),
     );
 
-    await NCEngine.connect(
-      ConnectParams(token: _tokenController.text.trim()),
-      (userId, error) {
-        if (!mounted) return;
-        setState(() {
-          if (error != null && !error.isSuccess) {
-            _log += 'Connect failed: ${error.toJson()}\n';
-            return;
-          }
-          _log += 'Connected as: ${userId ?? '(empty)'}\n';
-        });
-      },
-    );
+    await NCEngine.connect(ConnectParams(token: _tokenController.text.trim()), (
+      userId,
+      error,
+    ) {
+      if (!mounted) return;
+      setState(() {
+        if (error != null && !error.isSuccess) {
+          _log += 'Connect failed: ${error.toJson()}\n';
+          return;
+        }
+        _log += 'Connected as: ${userId ?? '(empty)'}\n';
+      });
+    });
   }
 
   Future<void> _runSample() async {
@@ -69,7 +67,11 @@ class _CreateGroupAndSendMessagePageState
         .where((item) => item.isNotEmpty)
         .toList();
 
-    if (appKey.isEmpty || token.isEmpty || groupId.isEmpty || groupName.isEmpty || text.isEmpty) {
+    if (appKey.isEmpty ||
+        token.isEmpty ||
+        groupId.isEmpty ||
+        groupName.isEmpty ||
+        text.isEmpty) {
       setState(() {
         _log = 'App Key, Token, Group ID, Group Name, and Text are required.';
       });
@@ -100,14 +102,13 @@ class _CreateGroupAndSendMessagePageState
           }
 
           setState(() {
-            _log += 'createGroup succeeded: ${groupInfo?.groupId ?? '(empty)'}\n';
+            _log +=
+                'createGroup succeeded: ${groupInfo?.groupId ?? '(empty)'}\n';
           });
 
           final channel = GroupChannel(groupId);
           await channel.sendMessage(
-            SendMessageParams(
-              messageParams: TextMessageParams(text: text),
-            ),
+            SendMessageParams(messageParams: TextMessageParams(text: text)),
             callback: SendMessageCallback(
               onMessageSent: (code, message) {
                 if (!mounted) return;
@@ -168,7 +169,9 @@ class _CreateGroupAndSendMessagePageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Group Channel And Send Message')),
+      appBar: AppBar(
+        title: const Text('Create Group Channel And Send Message'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -185,7 +188,11 @@ class _CreateGroupAndSendMessagePageState
           _buildField('Token', _tokenController),
           _buildField('Group ID', _groupIdController),
           _buildField('Group Name', _groupNameController),
-          _buildField('Invitee User IDs (comma separated)', _inviteeUserIdsController, hint: 'user_a,user_b'),
+          _buildField(
+            'Invitee User IDs (comma separated)',
+            _inviteeUserIdsController,
+            hint: 'user_a,user_b',
+          ),
           _buildField('Text', _textController, maxLines: 3),
           ElevatedButton(
             onPressed: _running ? null : _runSample,

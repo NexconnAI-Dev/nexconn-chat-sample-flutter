@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexconn_flutter/nexconn_flutter.dart';
+import 'package:ai_nexconn_chat_plugin/ai_nexconn_chat_plugin.dart';
 
 void main() {
   runApp(const SampleApp());
@@ -10,9 +10,7 @@ class SampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: GetGroupMembersPage(),
-    );
+    return const MaterialApp(home: GetGroupMembersPage());
   }
 }
 
@@ -38,19 +36,19 @@ class _GetGroupMembersPageState extends State<GetGroupMembersPage> {
       InitParams(appKey: _appKeyController.text.trim()),
     );
 
-    await NCEngine.connect(
-      ConnectParams(token: _tokenController.text.trim()),
-      (userId, error) {
-        if (!mounted) return;
-        setState(() {
-          if (error != null && !error.isSuccess) {
-            _log += 'Connect failed: ${error.toJson()}\n';
-            return;
-          }
-          _log += 'Connected as: ${userId ?? '(empty)'}\n';
-        });
-      },
-    );
+    await NCEngine.connect(ConnectParams(token: _tokenController.text.trim()), (
+      userId,
+      error,
+    ) {
+      if (!mounted) return;
+      setState(() {
+        if (error != null && !error.isSuccess) {
+          _log += 'Connect failed: ${error.toJson()}\n';
+          return;
+        }
+        _log += 'Connected as: ${userId ?? '(empty)'}\n';
+      });
+    });
   }
 
   Future<void> _runSample() async {
@@ -65,7 +63,8 @@ class _GetGroupMembersPageState extends State<GetGroupMembersPage> {
 
     if (appKey.isEmpty || token.isEmpty || groupId.isEmpty || userIds.isEmpty) {
       setState(() {
-        _log = 'App Key, Token, Group ID, and at least one User ID are required.';
+        _log =
+            'App Key, Token, Group ID, and at least one User ID are required.';
       });
       return;
     }
@@ -89,7 +88,8 @@ class _GetGroupMembersPageState extends State<GetGroupMembersPage> {
 
           _log += 'Loaded ${members?.length ?? 0} group members.\n';
           for (final member in members ?? const <GroupMemberInfo>[]) {
-            _log += '- ${member.userId ?? '(empty)'} / ${member.nickname ?? member.name ?? '(no name)'}\n';
+            _log +=
+                '- ${member.userId ?? '(empty)'} / ${member.nickname ?? member.name ?? '(no name)'}\n';
           }
         });
       });
@@ -153,7 +153,11 @@ class _GetGroupMembersPageState extends State<GetGroupMembersPage> {
           _buildField('App Key', _appKeyController),
           _buildField('Token', _tokenController),
           _buildField('Group ID', _groupIdController),
-          _buildField('User IDs (comma separated)', _userIdsController, hint: 'user_a,user_b'),
+          _buildField(
+            'User IDs (comma separated)',
+            _userIdsController,
+            hint: 'user_a,user_b',
+          ),
           ElevatedButton(
             onPressed: _running ? null : _runSample,
             child: Text(_running ? 'Running...' : 'Run Sample'),

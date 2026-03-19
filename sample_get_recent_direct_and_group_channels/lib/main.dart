@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexconn_flutter/nexconn_flutter.dart';
+import 'package:ai_nexconn_chat_plugin/ai_nexconn_chat_plugin.dart';
 
 void main() {
   runApp(const SampleApp());
@@ -10,9 +10,7 @@ class SampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: GetRecentChannelsPage(),
-    );
+    return const MaterialApp(home: GetRecentChannelsPage());
   }
 }
 
@@ -28,7 +26,8 @@ class _GetRecentChannelsPageState extends State<GetRecentChannelsPage> {
   final _tokenController = TextEditingController();
   final _pageSizeController = TextEditingController(text: '20');
 
-  String _log = 'Fill in App Key and Token, then load recent direct and group channels.';
+  String _log =
+      'Fill in App Key and Token, then load recent direct and group channels.';
   bool _running = false;
 
   Future<void> _initializeAndConnect() async {
@@ -37,19 +36,19 @@ class _GetRecentChannelsPageState extends State<GetRecentChannelsPage> {
       InitParams(appKey: _appKeyController.text.trim()),
     );
 
-    await NCEngine.connect(
-      ConnectParams(token: _tokenController.text.trim()),
-      (userId, error) {
-        if (!mounted) return;
-        setState(() {
-          if (error != null && !error.isSuccess) {
-            _log += 'Connect failed: ${error.toJson()}\n';
-            return;
-          }
-          _log += 'Connected as: ${userId ?? '(empty)'}\n';
-        });
-      },
-    );
+    await NCEngine.connect(ConnectParams(token: _tokenController.text.trim()), (
+      userId,
+      error,
+    ) {
+      if (!mounted) return;
+      setState(() {
+        if (error != null && !error.isSuccess) {
+          _log += 'Connect failed: ${error.toJson()}\n';
+          return;
+        }
+        _log += 'Connected as: ${userId ?? '(empty)'}\n';
+      });
+    });
   }
 
   Future<void> _runSample() async {
@@ -74,10 +73,7 @@ class _GetRecentChannelsPageState extends State<GetRecentChannelsPage> {
 
       final query = BaseChannel.createChannelListQuery(
         ChannelListQueryParams(
-          channelTypes: const [
-            ChannelType.direct,
-            ChannelType.group,
-          ],
+          channelTypes: const [ChannelType.direct, ChannelType.group],
           pageSize: pageSize,
           topPriority: true,
         ),

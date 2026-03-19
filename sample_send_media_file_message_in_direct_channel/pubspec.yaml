@@ -9,8 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  nexconn_flutter:
-    path: ../../../
+  ai_nexconn_chat_plugin:
+    path: ../../
 
 dev_dependencies:
   flutter_test:

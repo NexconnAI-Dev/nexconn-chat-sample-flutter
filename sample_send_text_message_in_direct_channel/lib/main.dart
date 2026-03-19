@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexconn_flutter/nexconn_flutter.dart';
+import 'package:ai_nexconn_chat_plugin/ai_nexconn_chat_plugin.dart';
 
 void main() {
   runApp(const SampleApp());
@@ -10,9 +10,7 @@ class SampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SendTextMessagePage(),
-    );
+    return const MaterialApp(home: SendTextMessagePage());
   }
 }
 
@@ -27,9 +25,12 @@ class _SendTextMessagePageState extends State<SendTextMessagePage> {
   final _appKeyController = TextEditingController();
   final _tokenController = TextEditingController();
   final _targetUserIdController = TextEditingController();
-  final _textController = TextEditingController(text: 'Hello from NexConn Flutter sample.');
+  final _textController = TextEditingController(
+    text: 'Hello from NexConn Flutter sample.',
+  );
 
-  String _log = 'Fill in the fields, then tap the button to send a direct text message.';
+  String _log =
+      'Fill in the fields, then tap the button to send a direct text message.';
   bool _running = false;
 
   Future<void> _initializeAndConnect() async {
@@ -38,19 +39,19 @@ class _SendTextMessagePageState extends State<SendTextMessagePage> {
       InitParams(appKey: _appKeyController.text.trim()),
     );
 
-    await NCEngine.connect(
-      ConnectParams(token: _tokenController.text.trim()),
-      (userId, error) {
-        if (!mounted) return;
-        setState(() {
-          if (error != null && !error.isSuccess) {
-            _log += 'Connect failed: ${error.toJson()}\n';
-            return;
-          }
-          _log += 'Connected as: ${userId ?? '(empty)'}\n';
-        });
-      },
-    );
+    await NCEngine.connect(ConnectParams(token: _tokenController.text.trim()), (
+      userId,
+      error,
+    ) {
+      if (!mounted) return;
+      setState(() {
+        if (error != null && !error.isSuccess) {
+          _log += 'Connect failed: ${error.toJson()}\n';
+          return;
+        }
+        _log += 'Connected as: ${userId ?? '(empty)'}\n';
+      });
+    });
   }
 
   Future<void> _runSample() async {
@@ -59,7 +60,10 @@ class _SendTextMessagePageState extends State<SendTextMessagePage> {
     final targetUserId = _targetUserIdController.text.trim();
     final text = _textController.text.trim();
 
-    if (appKey.isEmpty || token.isEmpty || targetUserId.isEmpty || text.isEmpty) {
+    if (appKey.isEmpty ||
+        token.isEmpty ||
+        targetUserId.isEmpty ||
+        text.isEmpty) {
       setState(() {
         _log = 'App Key, Token, Target User ID, and Text are required.';
       });
@@ -76,9 +80,7 @@ class _SendTextMessagePageState extends State<SendTextMessagePage> {
 
       final channel = DirectChannel(targetUserId);
       await channel.sendMessage(
-        SendMessageParams(
-          messageParams: TextMessageParams(text: text),
-        ),
+        SendMessageParams(messageParams: TextMessageParams(text: text)),
         callback: SendMessageCallback(
           onMessageSent: (code, message) {
             if (!mounted) return;

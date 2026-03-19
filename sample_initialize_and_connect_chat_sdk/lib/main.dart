@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexconn_flutter/nexconn_flutter.dart';
+import 'package:ai_nexconn_chat_plugin/ai_nexconn_chat_plugin.dart';
 
 void main() {
   runApp(const SampleApp());
@@ -10,9 +10,7 @@ class SampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: InitializeAndConnectPage(),
-    );
+    return const MaterialApp(home: InitializeAndConnectPage());
   }
 }
 
@@ -63,20 +61,17 @@ class _InitializeAndConnectPageState extends State<InitializeAndConnectPage> {
         _log += 'SDK initialized successfully.\nConnecting...\n';
       });
 
-      await NCEngine.connect(
-        ConnectParams(token: token),
-        (userId, error) {
-          if (!mounted) return;
-          setState(() {
-            if (error != null && !error.isSuccess) {
-              _log += 'Connect failed: ${error.toJson()}\n';
-              return;
-            }
-            _log += 'Connect succeeded.\n';
-            _log += 'Connected userId: ${userId ?? '(empty)'}\n';
-          });
-        },
-      );
+      await NCEngine.connect(ConnectParams(token: token), (userId, error) {
+        if (!mounted) return;
+        setState(() {
+          if (error != null && !error.isSuccess) {
+            _log += 'Connect failed: ${error.toJson()}\n';
+            return;
+          }
+          _log += 'Connect succeeded.\n';
+          _log += 'Connected userId: ${userId ?? '(empty)'}\n';
+        });
+      });
     } catch (error) {
       if (!mounted) return;
       setState(() {
@@ -134,9 +129,21 @@ class _InitializeAndConnectPageState extends State<InitializeAndConnectPage> {
               ),
             ),
           ),
-          _buildField('App Key', _appKeyController, hint: 'Leave blank until you have applied for one'),
-          _buildField('Token', _tokenController, hint: 'Leave blank until your server can provide one'),
-          _buildField('Navi Server (Optional)', _naviServerController, hint: 'Optional private deployment address'),
+          _buildField(
+            'App Key',
+            _appKeyController,
+            hint: 'Leave blank until you have applied for one',
+          ),
+          _buildField(
+            'Token',
+            _tokenController,
+            hint: 'Leave blank until your server can provide one',
+          ),
+          _buildField(
+            'Navi Server (Optional)',
+            _naviServerController,
+            hint: 'Optional private deployment address',
+          ),
           ElevatedButton(
             onPressed: _running ? null : _runSample,
             child: Text(_running ? 'Running...' : 'Run Sample'),

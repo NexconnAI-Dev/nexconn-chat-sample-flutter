@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexconn_flutter/nexconn_flutter.dart';
+import 'package:ai_nexconn_chat_plugin/ai_nexconn_chat_plugin.dart';
 
 void main() {
   runApp(const SampleApp());
@@ -10,9 +10,7 @@ class SampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SetNoDisturbPage(),
-    );
+    return const MaterialApp(home: SetNoDisturbPage());
   }
 }
 
@@ -30,7 +28,8 @@ class _SetNoDisturbPageState extends State<SetNoDisturbPage> {
   final _groupIdController = TextEditingController();
 
   NoDisturbLevel _selectedLevel = NoDisturbLevel.blocked;
-  String _log = 'Fill in the fields, then set do-not-disturb for both channels.';
+  String _log =
+      'Fill in the fields, then set do-not-disturb for both channels.';
   bool _running = false;
 
   Future<void> _initializeAndConnect() async {
@@ -39,19 +38,19 @@ class _SetNoDisturbPageState extends State<SetNoDisturbPage> {
       InitParams(appKey: _appKeyController.text.trim()),
     );
 
-    await NCEngine.connect(
-      ConnectParams(token: _tokenController.text.trim()),
-      (userId, error) {
-        if (!mounted) return;
-        setState(() {
-          if (error != null && !error.isSuccess) {
-            _log += 'Connect failed: ${error.toJson()}\n';
-            return;
-          }
-          _log += 'Connected as: ${userId ?? '(empty)'}\n';
-        });
-      },
-    );
+    await NCEngine.connect(ConnectParams(token: _tokenController.text.trim()), (
+      userId,
+      error,
+    ) {
+      if (!mounted) return;
+      setState(() {
+        if (error != null && !error.isSuccess) {
+          _log += 'Connect failed: ${error.toJson()}\n';
+          return;
+        }
+        _log += 'Connected as: ${userId ?? '(empty)'}\n';
+      });
+    });
   }
 
   Future<void> _runSample() async {
@@ -60,7 +59,10 @@ class _SetNoDisturbPageState extends State<SetNoDisturbPage> {
     final directUserId = _directUserIdController.text.trim();
     final groupId = _groupIdController.text.trim();
 
-    if (appKey.isEmpty || token.isEmpty || directUserId.isEmpty || groupId.isEmpty) {
+    if (appKey.isEmpty ||
+        token.isEmpty ||
+        directUserId.isEmpty ||
+        groupId.isEmpty) {
       setState(() {
         _log = 'App Key, Token, Direct User ID, and Group ID are required.';
       });
@@ -162,10 +164,8 @@ class _SetNoDisturbPageState extends State<SetNoDisturbPage> {
             ),
             items: NoDisturbLevel.values
                 .map(
-                  (level) => DropdownMenuItem(
-                    value: level,
-                    child: Text(level.name),
-                  ),
+                  (level) =>
+                      DropdownMenuItem(value: level, child: Text(level.name)),
                 )
                 .toList(),
             onChanged: (value) {
