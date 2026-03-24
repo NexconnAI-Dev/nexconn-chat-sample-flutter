@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:ai_nexconn_chat_plugin/ai_nexconn_chat_plugin.dart';
 
@@ -31,24 +33,33 @@ class _GetRecentChannelsPageState extends State<GetRecentChannelsPage> {
   bool _running = false;
 
   Future<void> _initializeAndConnect() async {
+    final completer = Completer<void>();
+
     await NCEngine.destroy();
     await NCEngine.initialize(
       InitParams(appKey: _appKeyController.text.trim()),
     );
 
-    await NCEngine.connect(ConnectParams(token: _tokenController.text.trim()), (
+    NCEngine.connect(ConnectParams(token: _tokenController.text.trim()), (
       userId,
       error,
     ) {
-      if (!mounted) return;
+      if (!mounted) {
+        if (!completer.isCompleted) completer.completeError('Widget disposed');
+        return;
+      }
       setState(() {
         if (error != null && !error.isSuccess) {
           _log += 'Connect failed: ${error.toJson()}\n';
+          if (!completer.isCompleted) completer.completeError(error);
           return;
         }
         _log += 'Connected as: ${userId ?? '(empty)'}\n';
+        if (!completer.isCompleted) completer.complete();
       });
     });
+
+    return completer.future;
   }
 
   Future<void> _runSample() async {
@@ -79,7 +90,7 @@ class _GetRecentChannelsPageState extends State<GetRecentChannelsPage> {
         ),
       );
 
-      await query.loadNextPage((channels, error) {
+      await query.loadNextPage((page, error) {
         if (!mounted) return;
         setState(() {
           if (error != null && !error.isSuccess) {
@@ -87,8 +98,9 @@ class _GetRecentChannelsPageState extends State<GetRecentChannelsPage> {
             return;
           }
 
-          _log += 'Loaded ${channels?.length ?? 0} channels.\n';
-          for (final channel in channels ?? const <BaseChannel>[]) {
+          final channels = page?.data ?? const <BaseChannel>[];
+          _log += 'Loaded ${channels.length} channels.\n';
+          for (final channel in channels) {
             _log += '- ${channel.channelType.name} / ${channel.channelId}\n';
           }
         });

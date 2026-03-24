@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:ai_nexconn_chat_plugin/ai_nexconn_chat_plugin.dart';
+import 'package:image_picker/image_picker.dart';
 
 void main() {
   runApp(const SampleApp());
@@ -32,25 +35,44 @@ class _SendMediaFileMessagePageState extends State<SendMediaFileMessagePage> {
       'Provide a local file path, then tap the button to send a media file message.';
   bool _running = false;
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _filePathController.text = image.path;
+      });
+    }
+  }
+
   Future<void> _initializeAndConnect() async {
+    final completer = Completer<void>();
+
     await NCEngine.destroy();
     await NCEngine.initialize(
       InitParams(appKey: _appKeyController.text.trim()),
     );
 
-    await NCEngine.connect(ConnectParams(token: _tokenController.text.trim()), (
+    NCEngine.connect(ConnectParams(token: _tokenController.text.trim()), (
       userId,
       error,
     ) {
-      if (!mounted) return;
+      if (!mounted) {
+        if (!completer.isCompleted) completer.completeError('Widget disposed');
+        return;
+      }
       setState(() {
         if (error != null && !error.isSuccess) {
           _log += 'Connect failed: ${error.toJson()}\n';
+          if (!completer.isCompleted) completer.completeError(error);
           return;
         }
         _log += 'Connected as: ${userId ?? '(empty)'}\n';
+        if (!completer.isCompleted) completer.complete();
       });
     });
+
+    return completer.future;
   }
 
   Future<void> _runSample() async {
@@ -161,10 +183,21 @@ class _SendMediaFileMessagePageState extends State<SendMediaFileMessagePage> {
           _buildField('App Key', _appKeyController),
           _buildField('Token', _tokenController),
           _buildField('Target User ID', _targetUserIdController),
-          _buildField(
-            'Local File Path',
-            _filePathController,
-            hint: '/path/to/file.pdf',
+          Row(
+            children: [
+              Expanded(
+                child: _buildField(
+                  'Local File Path',
+                  _filePathController,
+                  hint: '/path/to/image.jpg',
+                ),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: const Text('Pick Image'),
+              ),
+            ],
           ),
           ElevatedButton(
             onPressed: _running ? null : _runSample,
