@@ -29,7 +29,7 @@ class _SetNoDisturbPageState extends State<SetNoDisturbPage> {
   final _directUserIdController = TextEditingController();
   final _groupIdController = TextEditingController();
 
-  NoDisturbLevel _selectedLevel = NoDisturbLevel.blocked;
+  ChannelNoDisturbLevel _selectedLevel = ChannelNoDisturbLevel.blocked;
   String _log =
       'Fill in the fields, then set do-not-disturb for both channels.';
   bool _running = false;
@@ -167,13 +167,13 @@ class _SetNoDisturbPageState extends State<SetNoDisturbPage> {
           _buildField('Direct User ID', _directUserIdController),
           _buildField('Group ID', _groupIdController),
           const SizedBox(height: 4),
-          DropdownButtonFormField<NoDisturbLevel>(
+          DropdownButtonFormField<ChannelNoDisturbLevel>(
             value: _selectedLevel,
             decoration: const InputDecoration(
               labelText: 'No Disturb Level',
               border: OutlineInputBorder(),
             ),
-            items: NoDisturbLevel.values
+            items: ChannelNoDisturbLevel.values
                 .map(
                   (level) =>
                       DropdownMenuItem(value: level, child: Text(level.name)),
