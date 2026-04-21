@@ -99,22 +99,24 @@ class _CreateGroupAndSendMessagePageState
 
       await GroupChannel.createGroup(
         CreateGroupParams(
-          info: GroupInfo(groupId: groupId, groupName: groupName),
+          groupId: groupId,
+          groupName: groupName,
           inviteeUserIds: inviteeUserIds,
         ),
-        (groupInfo, error) async {
+        (errorKeys, processCode, error) async {
           if (!mounted) return;
 
           if (error != null && !error.isSuccess) {
             setState(() {
-              _log += 'createGroup failed: ${error.toJson()}\n';
+              _log +=
+                  'createGroup failed: processCode=$processCode errorKeys=$errorKeys ${error.toJson()}\n';
             });
             return;
           }
 
           setState(() {
             _log +=
-                'createGroup succeeded: ${groupInfo?.groupId ?? '(empty)'}\n';
+                'createGroup succeeded: groupId=$groupId, processCode=$processCode\n';
           });
 
           final channel = GroupChannel(groupId);
