@@ -4,10 +4,11 @@ packages:
   ai_nexconn_chat_plugin:
     dependency: "direct main"
     description:
-      path: "../.."
-      relative: true
-    source: path
-    version: "1.0.0"
+      name: ai_nexconn_chat_plugin
+      sha256: fca6742097df278633d0e1ebed3b816b88ea721bf953546b617698a822398c52
+      url: "https://pub.dev"
+    source: hosted
+    version: "26.2.0"
   async:
     dependency: transitive
     description:
@@ -299,10 +300,10 @@ packages:
     dependency: transitive
     description:
       name: rongcloud_im_wrapper_plugin
-      sha256: "5b9922d787263e011a331cc569153f17bb2f57ce5a1635d4c5304c43daf70e5b"
+      sha256: "888aee03f9d231e45e2fde19eddfc6c4921cdac38ca15d9aea3235e2bda1ea1b"
       url: "https://pub.dev"
     source: hosted
-    version: "5.32.3"
+    version: "5.32.6"
   sky_engine:
     dependency: transitive
     description: flutter
